@@ -1,4 +1,9 @@
-<script></script>
+<script setup lang="ts">
+const users = await useFetch('/api/getTestDbData').data.value[0][0]
+const newUsers = await users.data.value[0][0]
+
+console.log(newUsers.value)
+</script>
 <template>
   <div class="wrapper">
     <div class="wrapper__header">
@@ -17,6 +22,7 @@
     <div class="wrapper__footer">
       <button class="footer__login">Login</button>
     </div>
+    <span>Name: </span> {{ newUsers.us_lName }}
   </div>
 </template>
 <style></style>
