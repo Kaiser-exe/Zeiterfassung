@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const logins = await (await useFetch('/api/getLogin')).data.value
+const logins = await (await useFetch('/api/getLogin', {params: {param1: '1'}})).data.value
 
 const showError = ref<boolean>(false)
 const loggedIn = ref<boolean>(false)
@@ -24,8 +24,6 @@ watch(
       }
     }
 )
-
-console.log(logins)
 </script>
 <template>
   <div class="wrapper">
