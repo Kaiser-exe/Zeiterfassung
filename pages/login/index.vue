@@ -1,29 +1,21 @@
 <script setup lang="ts">
-const logins = await (await useFetch('/api/getLogin', {params: {param1: '1'}})).data.value
+const logins = await (await useFetch('/api/getLogin')).data.value
 
 const showError = ref<boolean>(false)
-const loggedIn = ref<boolean>(false)
 const inputUsername = ref<string>('')
 const inputPassword = ref<string>('')
 
 const checkLoginData = () => {
   if (logins.filter(login => login.username === inputUsername.value && login.password === inputPassword.value).length > 0) {
-    loggedIn.value = true
+    if (logins.filter(login => login.username === inputUsername.value)[0].admin === 1) {
+      navigateTo('/admin')
+    } else {
+      navigateTo('/employee')
+    }
   } else {
     showError.value = true
   }
 }
-
-watch(
-    () => loggedIn.value,
-    () => {
-      if (logins.filter(login => login.username === inputUsername.value)[0].admin === 1) {
-        navigateTo('/admin')
-      } else {
-        navigateTo('/employee')
-      }
-    }
-)
 </script>
 <template>
   <div class="wrapper">
