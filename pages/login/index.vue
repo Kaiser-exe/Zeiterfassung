@@ -1,15 +1,22 @@
 <script setup lang="ts">
+import {useGlobalStore} from "@/stores/global";
+
+const store = useGlobalStore();
 const logins = await (await useFetch('/api/getLogin')).data.value
 
 const showError = ref<boolean>(false)
 const inputUsername = ref<string>('')
 const inputPassword = ref<string>('')
 
-const checkLoginData = () => {
+const checkLoginData = async () => {
   if (logins.filter(login => login.username === inputUsername.value && login.password === inputPassword.value).length > 0) {
     if (logins.filter(login => login.username === inputUsername.value)[0].admin === 1) {
       navigateTo('/admin')
+      await store.fetchAdminOverview()
+      console.log(store.overviewData)
     } else {
+      await store.fetchUser('1')
+      console.log(store.userData)
       navigateTo('/employee')
     }
   } else {
