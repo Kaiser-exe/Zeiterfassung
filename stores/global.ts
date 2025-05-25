@@ -42,7 +42,7 @@ export const useGlobalStore = defineStore('global', () => {
                                 id: work.ab_id,
                                 name: absence[work.ab_id - 1].ab_name
                             }
-                            : null
+                            : undefined
                     })
                 }
             }
@@ -52,15 +52,13 @@ export const useGlobalStore = defineStore('global', () => {
                 firstName: user.us_fName,
                 lastName: user.us_lName,
                 entry: user.us_entry,
-                departure: user.us_departure ?? null,
+                departure: user.us_departure ?? undefined,
                 vacation: user.us_vacation,
                 timeComp: user.us_timeComp,
                 worked: workedAbsences,
                 expected: expectedWeekdays
             })
         }
-
-        console.log(userData.value)
     }
 
     const fetchAdminOverview = async () => {
@@ -93,9 +91,17 @@ export const useGlobalStore = defineStore('global', () => {
                 expected: expectedWeekdays,
             })
         }
-
-        console.log(overviewData.value)
     }
 
-    return {userData, overviewData, fetchUser, fetchAdminOverview}
+    const insertUser = async (user) => {
+        await useFetch('/api/postNewUser', {method: 'POST', body: user})
+    }
+
+    const insertTime = async (times) => {
+        for (const time of times) {
+            await useFetch('/api/postNewTime', {method: 'POST', body: time})
+        }
+    }
+
+    return {userData, overviewData, fetchUser, fetchAdminOverview, insertUser, insertTime}
 })
