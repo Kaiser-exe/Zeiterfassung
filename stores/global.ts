@@ -4,16 +4,16 @@ import type {User} from '../composables/types'
 export const useGlobalStore = defineStore('global', () => {
     const userData = ref<User[]>([])
     const overviewData = ref<AdminOverview[]>([])
+    const absence = ref([])
+    const weekdays = ref([])
 
     const fetchUser = async (userId: string) => {
         const expectedWeekdays: Expected[] = []
         const workedAbsences: Worked[] = []
         let user = await (await useFetch('/api/getUser', {params: {param1: userId}})).data.value
         const worked = await (await useFetch('/api/getWorked', {params: {param1: userId}})).data.value
-        const absence = await (await useFetch('/api/getWorked')).data.value
         const userExpected = await (await useFetch('/api/getUserExpected', {params: {param1: userId}})).data.value
         const expected = await (await useFetch('/api/getExpected')).data.value
-        const weekdays = await (await useFetch('/api/getWeekday')).data.value
 
         userData.value = []
 
@@ -24,13 +24,13 @@ export const useGlobalStore = defineStore('global', () => {
                 expectedWeekdays.push({
                     id: expect.ex_id,
                     hours: expect.ex_hours,
-                    weekdays: weekdays[expect.we_id - 1].we_name
+                    weekdays: weekdays.value[expect.we_id - 1].we_name
                 })
             }
 
             expectedWeekdays.filter(expectedWeekday => userExpected && expectedWeekday.id === userExpected.ex_id)
 
-            if (worked && absence) {
+            if (worked && absence.value) {
                 for (const work of worked) {
                     workedAbsences.push({
                         id: work.wo_id,
@@ -40,7 +40,7 @@ export const useGlobalStore = defineStore('global', () => {
                         absence: work.ab_id ?
                             {
                                 id: work.ab_id,
-                                name: absence[work.ab_id - 1].ab_name
+                                name: absence.value[work.ab_id - 1].ab_name
                             }
                             : undefined
                     })
@@ -65,7 +65,6 @@ export const useGlobalStore = defineStore('global', () => {
         const users = await (await useFetch('/api/getUser')).data.value
         const userExpected = await (await useFetch('/api/getUserExpected')).data.value
         const expected = await (await useFetch('/api/getExpected')).data.value
-        const weekdays = await (await useFetch('/api/getWeekday')).data.value
 
         overviewData.value = []
 
@@ -78,7 +77,7 @@ export const useGlobalStore = defineStore('global', () => {
                     expectedWeekdays.push({
                         id: expect.ex_id,
                         hours: expect.ex_hours,
-                        weekday: weekdays[expect.we_id - 1].we_name
+                        weekday: weekdays.value[expect.we_id - 1].we_name
                     })
                 }
             }
@@ -93,6 +92,18 @@ export const useGlobalStore = defineStore('global', () => {
         }
     }
 
+    const fetchAbsence = async () => {
+        absence.value = await (await useFetch('/api/getAbsence')).data.value
+
+        absence.value = absence.value.map(a => a.ab_name)
+    }
+
+    const fetchWeekdays = async () => {
+        weekdays.value = await (await useFetch('/api/getWeekday')).data.value
+
+        weekdays.value = weekdays.value.map(w => w.we_name)
+    }
+
     const insertUser = async (user) => {
         await useFetch('/api/postUser', {method: 'POST', body: user})
     }
@@ -103,5 +114,16 @@ export const useGlobalStore = defineStore('global', () => {
         }
     }
 
-    return {userData, overviewData, fetchUser, fetchAdminOverview, insertUser, insertWorked}
+    return {
+        userData,
+        overviewData,
+        absence,
+        weekdays,
+        fetchUser,
+        fetchAdminOverview,
+        fetchAbsence,
+        fetchWeekdays,
+        insertUser,
+        insertWorked
+    }
 })
