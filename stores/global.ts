@@ -97,11 +97,11 @@ export const useGlobalStore = defineStore('global', () => {
         await useFetch('/api/postUser', {method: 'POST', body: user})
     }
 
-    const insertTime = async (times) => {
-        for (const time of times) {
-            await useFetch('/api/postWorked', {method: 'POST', body: time})
+    const insertWorked = async (worked) => {
+        for (const work of worked) {
+            await useFetch('/api/postWorked', {method: 'POST', body: work})
         }
     }
 
-    return {userData, overviewData, fetchUser, fetchAdminOverview, insertUser, insertTime}
+    return {userData, overviewData, fetchUser, fetchAdminOverview, insertUser, insertWorked}
 })
