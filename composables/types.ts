@@ -13,7 +13,7 @@ export type Worked = {
 
 export type Expected = {
     id: number
-    hours: string
+    hours: number
     weekday: string
 }
 

@@ -13,10 +13,8 @@ const checkLoginData = async () => {
     if (logins.filter(login => login.username === inputUsername.value)[0].admin === 1) {
       navigateTo('/admin')
       await store.fetchAdminOverview()
-      console.log(store.overviewData)
     } else {
       await store.fetchUser('1')
-      console.log(store.userData)
       navigateTo('/employee')
     }
   } else {
