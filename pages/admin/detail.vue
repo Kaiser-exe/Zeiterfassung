@@ -64,6 +64,17 @@ watch(
         <div>Zeitmodell</div>
         <table>
           <tbody>
+          <tr v-for="expect in store.userData[0].expected" :key="expect.id">
+            <td>{{ expect.weekdays }}</td>
+            <td>{{ expect.hours / 60 }}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div>Auswertung</div>
+        <table>
+          <tbody>
           <tr>
             <td>Urlaub in Stunden</td>
             <td>{{ store.userData[0].vacation }}</td>
@@ -83,33 +94,6 @@ watch(
           <tr>
             <td>Zeitausgleich diesen Monat</td>
             <td>???</td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
-      <div>
-        <div>Auswertung</div>
-        <table>
-          <tbody>
-          <tr>
-            <td>Urlaub</td>
-            <td>0</td>
-          </tr>
-          <tr>
-            <td>Krankentage</td>
-            <td>0</td>
-          </tr>
-          <tr>
-            <td>Zeitausgleich</td>
-            <td>0</td>
-          </tr>
-          <tr>
-            <td>Zeitausgleich bis Vormonat</td>
-            <td>0</td>
-          </tr>
-          <tr>
-            <td>Zeitausgleich diesen Monat</td>
-            <td>0</td>
           </tr>
           </tbody>
         </table>

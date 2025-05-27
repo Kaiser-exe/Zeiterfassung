@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia'
-import type {User} from '../composables/types'
+import type {User, AdminOverview, Expected, Worked} from '../composables/types'
 
 export const useGlobalStore = defineStore('global', () => {
     const userData = ref<User[]>([])
@@ -69,7 +69,7 @@ export const useGlobalStore = defineStore('global', () => {
         const users = await (await useFetch('/api/getUser')).data.value
         const userExpected = await (await useFetch('/api/getUserExpected')).data.value
         const expected = await (await useFetch('/api/getExpected')).data.value
-        const weekdaysTemp = await (await useFetch('/api/getWeekdays')).data.value
+        const weekdaysTemp = await (await useFetch('/api/getWeekday')).data.value
 
         overviewData.value = []
 

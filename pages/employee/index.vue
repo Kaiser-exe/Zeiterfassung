@@ -2,6 +2,7 @@
 import dayjs from "dayjs";
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 import {useGlobalStore} from "@/stores/global";
+import type {Expected, Worked} from '../composables/types'
 
 dayjs.extend(isSameOrBefore)
 
@@ -112,7 +113,7 @@ watch(
         <tbody>
         <tr>
           <td>Urlaub in Stunden</td>
-          <td>{{ store.userData[0].vacation }}</td>
+          <td>{{ store.userData[0].vacation / 60 }}</td>
         </tr>
         <tr>
           <td>Krankentage</td>

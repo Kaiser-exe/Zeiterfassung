@@ -11,11 +11,13 @@ const inputPassword = ref<string>('')
 const checkLoginData = async () => {
   if (logins.filter(login => login.username === inputUsername.value && login.password === inputPassword.value && !login.departure).length > 0) {
     if (logins.filter(login => login.username === inputUsername.value)[0].admin === 1) {
-      navigateTo('/admin')
       await store.fetchAdminOverview()
+      navigateTo('/admin')
     } else {
-      await store.fetchUser('1')
-      navigateTo('/employee')
+      //await store.fetchUser('1')
+      //navigateTo('/employee')
+      await store.fetchAdminOverview()
+      navigateTo('/admin')
     }
   } else {
     showError.value = true
