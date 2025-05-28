@@ -12,6 +12,8 @@ const worked = ref<Worked | undefined>()
 const expected = ref<Expected | undefined>()
 const editing = ref<boolean>(false)
 
+console.log(store.userData[0])
+
 const getWorkedExpected = (day: number) => {
   worked.value = store.userData[0].worked.filter(w => dayjs(w.startTime).format('DD.MM.YYYY') === currentDate.value.date(day).format('DD.MM.YYYY'))[0]
   expected.value = store.userData[0].expected.filter(e => e.weekdays === store.weekdays[currentDate.value.date(day).day()])[0]

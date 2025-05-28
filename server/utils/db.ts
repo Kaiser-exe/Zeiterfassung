@@ -1,6 +1,6 @@
 import mysql from 'mysql2/promise';
 
-const pool = mysql.createPool({
+const db = mysql.createPool({
     host: 'localhost',     // or your MySQL host
     user: 'root',
     password: 'root',
@@ -9,4 +9,4 @@ const pool = mysql.createPool({
     connectionLimit: 10,
 });
 
-export default pool;
+export default db;

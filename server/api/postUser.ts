@@ -1,42 +1,74 @@
 import db from '../utils/db';
 
 export default defineEventHandler(async (event) => {
-    const requestBody = await readBody(event)
+    try {
+        const body = await readBody(event)
 
-    await db.query(`
-        INSERT INTO user (us_fName, us_lName, us_userName, us_password, us_entry, us_vacation, us_timeComp)
-        VALUES (${requestBody.firstName}, ${requestBody.lastName}, ${requestBody.userName},
-                ${requestBody.password},
-                ${requestBody.entry}, ${requestBody.vacation}, ${requestBody.timeComp})
-    `)
+        const insertUserSql = `
+            INSERT INTO \`user\` (us_fName, us_lName, us_userName, us_password, us_entry, us_vacation, us_timeComp)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        `
 
-    for (const expect of requestBody.expected) {
-        await db.query(`
+        const insertUserParams = [
+            body.firstName,
+            body.lastName,
+            body.userName,
+            body.password,
+            body.entry,
+            body.vacation,
+            body.timeComp
+        ]
+
+        const userResult = await db.query(insertUserSql, insertUserParams)
+
+        const insertExpectSql = `
             INSERT INTO expected (ex_hours, we_id)
-            VAlUES (${expect.hours}, ${expect.weekday})
-        `)
-    }
+            VALUES (?, ?)
+        `
 
-    const lastUserId = (await db.query(`
-        SELECT AUTO_INCREMENT
-        FROM information_schema.tables
-        WHERE table_name = 'user'
-    `))[0].data.value[0]
+        for (const expect of body.expected) {
+            const expectParams = [expect.hours, expect.weekday]
+            const result = await db.query(insertExpectSql, expectParams)
+        }
 
-    const lastExpectedIds = (await db.query(`
-        SELECT AUTO_INCREMENT
-        FROM information_schema.tables
-        WHERE table_name = 'expected'
-    `))[0].data.value[0]
+        const lastUserId = (await db.query(`
+            SELECT AUTO_INCREMENT
+            FROM information_schema.tables
+            WHERE table_name = 'user'
+        `))[0][1].AUTO_INCREMENT
 
-    let count = lastExpectedIds - 1 - requestBody.expected.length
+        console.log(lastUserId)
 
-    while (count < lastExpectedIds) {
-        await db.query(`
+        const lastExpectedId = (await db.query(`
+            SELECT AUTO_INCREMENT
+            FROM information_schema.tables
+            WHERE table_name = 'expected'
+        `))[0][0].AUTO_INCREMENT
+
+        console.log(lastExpectedId)
+
+        let count = lastExpectedId - 1 - body.expected.length
+
+        const insertUserExpectSql = `
             INSERT INTO user_expected (us_id, ex_id)
-            VAlUES (${lastUserId - 1}, ${count})
-        `)
+            VALUES (?, ?)
+        `
 
-        count++
+        while (count < lastExpectedId) {
+            const userExpectParams = [lastUserId - 1, count]
+            await db.query(insertUserExpectSql, userExpectParams)
+
+            count++
+        }
+
+        return {success: true}
+
+    } catch (err) {
+        console.error('Full server error:', err)
+        throw createError({
+            statusCode: 500,
+            statusMessage: 'Unhandled server error',
+            data: err.message
+        })
     }
 })

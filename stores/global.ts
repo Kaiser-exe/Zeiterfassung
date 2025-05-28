@@ -8,7 +8,7 @@ export const useGlobalStore = defineStore('global', () => {
     const weekdays = ref([])
 
     const fetchUser = async (userId: string) => {
-        const expectedWeekdays: Expected[] = []
+        let expectedWeekdays: Expected[] = []
         const workedAbsences: Worked[] = []
         let user = await (await useFetch('/api/getUser', {params: {param1: userId}})).data.value
         const worked = await (await useFetch('/api/getWorked', {params: {param1: userId}})).data.value
@@ -23,16 +23,19 @@ export const useGlobalStore = defineStore('global', () => {
         if (user) {
             user = user[0]
             for (const expect of expected) {
-                console.log(expect)
                 expectedWeekdays.push({
                     id: expect.ex_id,
                     hours: expect.ex_hours,
                     weekdays: weekdaysTemp[expect.we_id - 1].we_name
                 })
-                console.log(expectedWeekdays)
             }
 
-            expectedWeekdays.filter(expectedWeekday => userExpected && expectedWeekday.id === userExpected.ex_id)
+            console.log(expectedWeekdays)
+            console.log(userExpected)
+
+            expectedWeekdays = expectedWeekdays.filter(expectedWeekday => userExpected && userExpected.some(userExpect => userExpect.ex_id === expectedWeekday.id))
+
+            console.log(expectedWeekdays)
 
             if (worked && absenceTemp) {
                 for (const work of worked) {
@@ -109,13 +112,16 @@ export const useGlobalStore = defineStore('global', () => {
         weekdays.value = weekdays.value.map(w => w.we_name)
     }
 
-    const insertUser = async (user) => {
-        await useFetch('/api/postUser', {method: 'POST', body: user})
+    const insertUser = async (user: User) => {
+        const test = await $fetch('/api/postUser', {
+            method: 'post',
+            body: user
+        })
     }
 
     const insertWorked = async (worked) => {
         for (const work of worked) {
-            await useFetch('/api/postWorked', {method: 'POST', body: work})
+            await useFetch('/api/postWorked', {method: 'post', body: work})
         }
     }
 
