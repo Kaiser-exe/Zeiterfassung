@@ -30,12 +30,7 @@ export const useGlobalStore = defineStore('global', () => {
                 })
             }
 
-            console.log(expectedWeekdays)
-            console.log(userExpected)
-
             expectedWeekdays = expectedWeekdays.filter(expectedWeekday => userExpected && userExpected.some(userExpect => userExpect.ex_id === expectedWeekday.id))
-
-            console.log(expectedWeekdays)
 
             if (worked && absenceTemp) {
                 for (const work of worked) {
@@ -119,7 +114,7 @@ export const useGlobalStore = defineStore('global', () => {
         })
     }
 
-    const insertWorked = async (worked) => {
+    const insertWorked = async (worked: Worked[]) => {
         for (const work of worked) {
             await useFetch('/api/postWorked', {method: 'post', body: work})
         }

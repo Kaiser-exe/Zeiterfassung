@@ -12,6 +12,14 @@ const substractMonths = ref<number>(1)
 const worked = ref<Worked | undefined>()
 const expected = ref<Expected | undefined>()
 const editing = ref<boolean>(false)
+const defaultWorked = () => ({
+  id: store.userData[0].id,
+  startTime: undefined,
+  endTime: undefined,
+  break: undefined,
+  absence: undefined
+})
+const insertWorked = ref<Worked[]>(Array.from({length: 31}, () => defaultWorked()))
 
 const getWorkedExpected = (day: number) => {
   worked.value = store.userData[0].worked.filter(w => dayjs(w.startTime).format('DD.MM.YYYY') === currentDate.value.date(day).format('DD.MM.YYYY'))[0]
@@ -49,6 +57,20 @@ const checkDayEmpty = (day: number) => {
   return true
 }
 
+const saveClick = async () => {
+  await store.insertWorked(insertWorked.value.filter(insertWork => insertWork.startTime && insertWork.endTime && insertWork.break))
+
+  await store.fetchUser(store.userData[0].id.toString())
+
+  insertWorked.value = Array.from({length: 31}, () => defaultWorked())
+
+  editing.value = false
+}
+
+const cancelClick = () => {
+  editing.value = false
+}
+
 watch(
     () => substractMonths.value,
     () => {
@@ -80,22 +102,22 @@ watch(
           <td>{{ store.weekdays[currentDate.date(day).day()] }}</td>
           <td>{{ currentDate.date(day).format('DD.MM.YYYY') }}</td>
           <td v-if="editing && checkDayEmpty(day)">
-            <select>
-              <option key="none" value=""/>
-              <option v-for="absence in store.absence" :key="absence" :value="absence">{{ absence }}</option>
+            <select v-model="insertWorked[day].absence">
+              <option key="none" :value="undefined"/>
+              <option v-for="absence in store.absence" :key="absence.id" :value="absence.id">{{ absence.name }}</option>
             </select>
           </td>
           <td v-else>{{ worked ? worked.absence : undefined }}</td>
           <td v-if="editing && checkDayEmpty(day)">
-            <input>
+            <input v-model="insertWorked[day].startTime" type="datetime-local">
           </td>
           <td v-else>{{ worked ? dayjs(worked.startTime).format('HH:mm') : undefined }}</td>
           <td v-if="editing && checkDayEmpty(day)">
-            <input>
+            <input v-model="insertWorked[day].endTime" type="datetime-local">
           </td>
           <td v-else>{{ worked ? dayjs(worked.endTime).format('HH:mm') : undefined }}</td>
           <td v-if="editing && checkDayEmpty(day)">
-            <input>
+            <input v-model="insertWorked[day].break" type="number">
           </td>
           <td v-else>{{ worked ? worked.break / 60 : undefined }}</td>
           <td>{{
@@ -138,8 +160,8 @@ watch(
       <button @click="editing = true">Edit</button>
     </div>
     <div v-else>
-      <button @click="editing = false">Cancel</button>
-      <button @click="editing = false">Save</button>
+      <button @click="cancelClick">Cancel</button>
+      <button @click="saveClick">Save</button>
     </div>
   </div>
 </template>

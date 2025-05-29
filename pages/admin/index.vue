@@ -25,7 +25,6 @@ const getTimeModel = (expected: Expected[]) => {
 }
 
 const handleDetailClick = async (userId: string) => {
-  console.log(userId);
   await store.fetchUser(userId)
   navigateTo('/admin/detail')
 }
