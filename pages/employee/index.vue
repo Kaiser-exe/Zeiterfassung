@@ -12,6 +12,7 @@ const substractMonths = ref<number>(1)
 const worked = ref<Worked | undefined>()
 const expected = ref<Expected | undefined>()
 const editing = ref<boolean>(false)
+let timeComp = 0
 const defaultWorked = () => ({
   id: store.userData[0].id,
   startTime: undefined,
@@ -29,10 +30,13 @@ const getWorkedExpected = (day: number) => {
 const getDiff = (day: number) => {
   if (currentDate.value.date(day).isSameOrBefore(dayjs(), 'day')) {
     if (expected.value && worked.value) {
+      timeComp += ((dayjs(worked.value.endTime).diff(dayjs(worked.value.startTime), 'hour', true) - worked.value.break / 60) - (expected.value.hours / 60))
       return (dayjs(worked.value.endTime).diff(dayjs(worked.value.startTime), 'hour', true) - worked.value.break / 60) - (expected.value.hours / 60)
     } else if (worked.value) {
+      timeComp += (dayjs(worked.value.endTime).diff(dayjs(worked.value.startTime), 'hour', true) - worked.value.break / 60)
       return dayjs(worked.value.endTime).diff(dayjs(worked.value.startTime), 'hour', true) - worked.value.break / 60
     } else if (expected.value) {
+      timeComp += ((expected.value.hours / 60) * -1)
       return (expected.value.hours / 60) * -1
     }
   }
@@ -55,6 +59,17 @@ const checkDayEmpty = (day: number) => {
   }
 
   return true
+}
+
+const getHoliday = () => {
+  let sum = 0
+  for (const work in worked.value) {
+    if (work.absence && work.absence.name === 'Urlaub') {
+      sum += dayjs(work.endTime).diff(dayjs(work.startTime), 'hour', true)
+    }
+  }
+
+  return sum
 }
 
 const saveClick = async () => {
@@ -144,6 +159,14 @@ watch(
         <tr>
           <td>Zeitausgleich</td>
           <td>{{ store.userData[0].timeComp }}</td>
+        </tr>
+        <tr>
+          <td>Urlaub dieses Monat</td>
+          <td>{{ getHoliday() }}</td>
+        </tr>
+        <tr>
+          <td>Überstunden dieses Monat</td>
+          <td>{{ timeComp / 60 }}</td>
         </tr>
         <tr>
           <td>Zeitausgleich bis Vormonat</td>
