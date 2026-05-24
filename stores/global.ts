@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia'
-import type {User, AdminOverview, Expected, Worked} from '../composables/types'
+import type {User, AdminOverview, Expected, Worked} from '~/composables/types'
 
 export const useGlobalStore = defineStore('global', () => {
     const userData = ref<User[]>([])
@@ -132,4 +132,14 @@ export const useGlobalStore = defineStore('global', () => {
         insertUser,
         insertWorked
     }
+},
+{
+  persist: {
+      storage: {
+          getItem: (key: string) => sessionStorage.getItem(key),
+          setItem: (key, value) => {
+              sessionStorage.setItem(key, value)
+          }
+      }
+  },
 })

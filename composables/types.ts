@@ -23,7 +23,8 @@ export type User = {
     lastName: string
     entry: Date
     departure?: Date
-    vacation: number
+    newVac: number
+    useVac: number
     timeComp: number
     worked: Worked[]
     expected: Expected[]
@@ -31,8 +32,7 @@ export type User = {
 
 export type AdminOverview = {
     id: number
-    name: string
-    vacation: number
-    timeComp: number
-    expected: Expected[]
+    firstName: string
+    lastName: string
+    users: User[]
 }

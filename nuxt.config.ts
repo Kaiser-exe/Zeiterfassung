@@ -3,5 +3,5 @@
 export default defineNuxtConfig({
     compatibilityDate: '2024-11-01',
     devtools: {enabled: true},
-    modules: ['@nuxt/content', '@nuxt/eslint', '@pinia/nuxt'],
+    modules: ['@nuxt/content', '@nuxt/eslint', '@pinia/nuxt','pinia-plugin-persistedstate/nuxt'],
 })
