@@ -1,8 +1,8 @@
-import db from '../utils/db';
+import db from "../utils/db"
 
 export default defineEventHandler(async (event) => {
-    const [users] = await db.query(`SELECT *
-                                    FROM expected`);
+  const [users] = await db.query(`SELECT *
+                                    FROM expected`)
 
-    return users
+  return users
 })

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import dayjs from "dayjs";
-import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
-import {useGlobalStore} from "@/stores/global";
+import dayjs from "dayjs"
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore"
+import { useGlobalStore } from "@/stores/global"
 
 dayjs.extend(isSameOrBefore)
 
-const store = useGlobalStore();
+const store = useGlobalStore()
 const currentDate = ref(dayjs())
 const substractMonths = ref<number>(1)
 const worked = ref<Worked | undefined>()
@@ -13,16 +13,37 @@ const expected = ref<Expected | undefined>()
 const editing = ref<boolean>(false)
 
 const getWorkedExpected = (day: number) => {
-  worked.value = store.userData[0].worked.filter(w => dayjs(w.startTime).format('DD.MM.YYYY') === currentDate.value.date(day).format('DD.MM.YYYY'))[0]
-  expected.value = store.userData[0].expected.filter(e => e.weekdays === store.weekdays[currentDate.value.date(day).day()])[0]
+  worked.value = store.userData[0].worked.filter(
+    (w) =>
+      dayjs(w.startTime).format("DD.MM.YYYY") ===
+      currentDate.value.date(day).format("DD.MM.YYYY")
+  )[0]
+  expected.value = store.userData[0].expected.filter(
+    (e) => e.weekdays === store.weekdays[currentDate.value.date(day).day()]
+  )[0]
 }
 
 const getDiff = (day: number) => {
-  if (currentDate.value.date(day).isSameOrBefore(dayjs(), 'day')) {
+  if (currentDate.value.date(day).isSameOrBefore(dayjs(), "day")) {
     if (expected.value && worked.value) {
-      return (dayjs(worked.value.endTime).diff(dayjs(worked.value.startTime), 'hour', true) - worked.value.break / 60) - (expected.value.hours / 60)
+      return (
+        dayjs(worked.value.endTime).diff(
+          dayjs(worked.value.startTime),
+          "hour",
+          true
+        ) -
+        worked.value.break / 60 -
+        expected.value.hours / 60
+      )
     } else if (worked.value) {
-      return dayjs(worked.value.endTime).diff(dayjs(worked.value.startTime), 'hour', true) - worked.value.break / 60
+      return (
+        dayjs(worked.value.endTime).diff(
+          dayjs(worked.value.startTime),
+          "hour",
+          true
+        ) -
+        worked.value.break / 60
+      )
     } else if (expected.value) {
       return (expected.value.hours / 60) * -1
     }
@@ -33,14 +54,22 @@ const getDiff = (day: number) => {
 
 const getSickdays = () => {
   const year = currentDate.value.year().toString()
-  const absences = store.userData[0].worked.filter(w => dayjs(w.startTime).format('YYYY') === year)
+  const absences = store.userData[0].worked.filter(
+    (w) => dayjs(w.startTime).format("YYYY") === year
+  )
 
-  return absences.filter(a => a.absence && a.absence.name === store.absence[0]).length
+  return absences.filter(
+    (a) => a.absence && a.absence.name === store.absence[0]
+  ).length
 }
 
 const checkDayEmpty = (day: number) => {
   if (store.userData[0].worked) {
-    if (store.userData[0].worked.filter(w => dayjs(w.startTime).isSame(currentDate.value.date(day), 'day')).length > 0) {
+    if (
+      store.userData[0].worked.filter((w) =>
+        dayjs(w.startTime).isSame(currentDate.value.date(day), "day")
+      ).length > 0
+    ) {
       return false
     }
   }
@@ -49,11 +78,13 @@ const checkDayEmpty = (day: number) => {
 }
 
 watch(
-    () => substractMonths.value,
-    () => {
-      currentDate.value = dayjs().subtract(substractMonths.value, 'month').startOf('month')
-    },
-    {immediate: true, deep: true}
+  () => substractMonths.value,
+  () => {
+    currentDate.value = dayjs()
+      .subtract(substractMonths.value, "month")
+      .startOf("month")
+  },
+  { immediate: true, deep: true }
 )
 </script>
 
@@ -64,10 +95,10 @@ watch(
         <div>Zeitmodell</div>
         <table>
           <tbody>
-          <tr v-for="expect in store.userData[0].expected" :key="expect.id">
-            <td>{{ expect.weekdays }}</td>
-            <td>{{ expect.hours / 60 }}</td>
-          </tr>
+            <tr v-for="expect in store.userData[0].expected" :key="expect.id">
+              <td>{{ expect.weekdays }}</td>
+              <td>{{ expect.hours / 60 }}</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -75,26 +106,26 @@ watch(
         <div>Auswertung</div>
         <table>
           <tbody>
-          <tr>
-            <td>Urlaub in Stunden</td>
-            <td>{{ store.userData[0].vacation }}</td>
-          </tr>
-          <tr>
-            <td>Krankentage</td>
-            <td>{{ getSickdays() }}</td>
-          </tr>
-          <tr>
-            <td>Zeitausgleich</td>
-            <td>{{ store.userData[0].timeComp }}</td>
-          </tr>
-          <tr>
-            <td>Zeitausgleich bis Vormonat</td>
-            <td>???</td>
-          </tr>
-          <tr>
-            <td>Zeitausgleich diesen Monat</td>
-            <td>???</td>
-          </tr>
+            <tr>
+              <td>Urlaub in Stunden</td>
+              <td>{{ store.userData[0].vacation }}</td>
+            </tr>
+            <tr>
+              <td>Krankentage</td>
+              <td>{{ getSickdays() }}</td>
+            </tr>
+            <tr>
+              <td>Zeitausgleich</td>
+              <td>{{ store.userData[0].timeComp }}</td>
+            </tr>
+            <tr>
+              <td>Zeitausgleich bis Vormonat</td>
+              <td>???</td>
+            </tr>
+            <tr>
+              <td>Zeitausgleich diesen Monat</td>
+              <td>???</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -116,28 +147,46 @@ watch(
               {{ getWorkedExpected(day) }}
             </td>
             <td>{{ store.weekdays[currentDate.date(day).day()] }}</td>
-            <td>{{ currentDate.date(day).format('DD.MM.YYYY') }}</td>
+            <td>{{ currentDate.date(day).format("DD.MM.YYYY") }}</td>
             <td v-if="editing && checkDayEmpty(day)">
               <select>
-                <option key="none" value=""/>
-                <option v-for="absence in store.absence" :key="absence" :value="absence">{{ absence }}</option>
+                <option key="none" value="" />
+                <option
+                  v-for="absence in store.absence"
+                  :key="absence"
+                  :value="absence"
+                >
+                  {{ absence }}
+                </option>
               </select>
             </td>
             <td v-else>{{ worked ? worked.absence : undefined }}</td>
             <td v-if="editing && checkDayEmpty(day)">
-              <input>
+              <input />
             </td>
-            <td v-else>{{ worked ? dayjs(worked.startTime).format('HH:mm') : undefined }}</td>
-            <td v-if="editing && checkDayEmpty(day)">
-              <input>
+            <td v-else>
+              {{ worked ? dayjs(worked.startTime).format("HH:mm") : undefined }}
             </td>
-            <td v-else>{{ worked ? dayjs(worked.endTime).format('HH:mm') : undefined }}</td>
             <td v-if="editing && checkDayEmpty(day)">
-              <input>
+              <input />
+            </td>
+            <td v-else>
+              {{ worked ? dayjs(worked.endTime).format("HH:mm") : undefined }}
+            </td>
+            <td v-if="editing && checkDayEmpty(day)">
+              <input />
             </td>
             <td v-else>{{ worked ? worked.break / 60 : undefined }}</td>
-            <td>{{
-                worked ? dayjs(worked.endTime).diff(dayjs(worked.startTime), 'hour', true) - worked.break / 60 : undefined
+            <td>
+              {{
+                worked
+                  ? dayjs(worked.endTime).diff(
+                      dayjs(worked.startTime),
+                      "hour",
+                      true
+                    ) -
+                    worked.break / 60
+                  : undefined
               }}
             </td>
             <td>{{ expected ? expected.hours / 60 : undefined }}</td>
