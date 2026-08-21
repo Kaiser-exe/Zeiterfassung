@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import {useGlobalStore} from "@/stores/global"
-import type {Expected} from "../composables/types"
+import { useGlobalStore } from "@/stores/global"
+import type { Expected } from "../composables/types"
 import dayjs from "dayjs"
 
 const store = useGlobalStore()
@@ -70,9 +70,9 @@ const cancelUser = async () => {
 <template>
   <div>
     <div
-        v-for="data in store.overviewData"
-        :key="data.id"
-        @click="handleDetailClick(data.id.toString())"
+      v-for="data in store.overviewData"
+      :key="data.id"
+      @click="handleDetailClick(data.id.toString())"
     >
       <h3>{{ data.name }}</h3>
       <div>{{ getTimeModel(data.expected) }}</div>
@@ -84,31 +84,31 @@ const cancelUser = async () => {
       <div>Zeitmodell</div>
       <table>
         <tbody>
-        <tr v-for="(weekday, index) in store.weekdays" :key="index">
-          <td>{{ weekday }}</td>
-          <td><input v-model="timeModel[index]"></td>
-        </tr>
+          <tr v-for="(weekday, index) in store.weekdays" :key="index">
+            <td>{{ weekday }}</td>
+            <td><input v-model="timeModel[index]" /></td>
+          </tr>
         </tbody>
       </table>
       <div>
         <span>Name: </span>
-        <input v-model="name">
+        <input v-model="name" />
       </div>
       <div>
         <span>Urlaubsanspruch: </span>
-        <input v-model="vacation" type="number">
+        <input v-model="vacation" type="number" />
       </div>
       <div>
         <span>Eintrittsdatum: </span>
-        <input v-model="entry" type="date">
+        <input v-model="entry" type="date" />
       </div>
       <div>
         <span>Benutzername: </span>
-        <input v-model="userName">
+        <input v-model="userName" />
       </div>
       <div>
         <span>Passwort: </span>
-        <input v-model="password">
+        <input v-model="password" />
       </div>
       <button @click="cancelUser">Cancel</button>
       <button @click="saveUser">Save</button>
